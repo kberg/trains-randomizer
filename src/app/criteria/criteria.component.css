@@ -1,0 +1,9 @@
+.grid-container {
+  display: inline-grid;
+  grid-template-columns: auto auto auto auto;
+  grid-gap: 3px;
+}
+
+.grid-item {
+  padding: 10px;
+}

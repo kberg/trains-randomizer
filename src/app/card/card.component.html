@@ -1,0 +1,8 @@
+<!-- Remove style and move it into a class.-->
+<div [className]="'base'">
+  <div [ngClass]="cardColor()">
+    <div [className]="'buffer'"></div>
+    <div [className]="'name'">{{card.name}}</div>
+    <span [className]="'type'">{{card.type}}</span>
+  </div>
+</div>

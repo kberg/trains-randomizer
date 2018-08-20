@@ -1,0 +1,48 @@
+.base {
+  font-family: sans-serif;
+  text-align: center;
+  width: 200px;
+  height: 120px;
+}
+
+.buffer {
+  height: 8px;
+}
+
+.name {
+  margin: 8px;
+  background: black;
+  color: white;
+  font-size: 24px;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.type {
+  font-size: 12px;
+  vertical-align: text-bottom;
+}
+
+.action {
+  background-color: rgb(207, 83, 83);
+}
+
+.raillaying {
+  background-color: rgb(105, 168, 108);
+}
+
+.stationexpansion {
+  background-color: rgb(117, 109, 162);
+}
+
+.train {
+  background-color: rgb(113, 152, 202);
+}
+
+.victorypoints {
+  background-color: rgb(190, 163, 61);
+}
+
+.waste {
+  background-color: rgb(101, 100, 107);
+}
