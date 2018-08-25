@@ -1,11 +1,11 @@
 <h2>Criteria:</h2>
 <div>
   <form novalidate #criteriaForm="ngForm">
-    <label>Set <input type="text" [(ngModel)]="criteria.set" name="set" /></label> <br/>
+    <!-- <label>Set <input type="text" [(ngModel)]="criteria.set" name="set" /></label> <br/> -->
     <label>Include Trains <input type="checkbox" required [(ngModel)]="criteria.includeTrains" name="includeTrains"></label> <br/>
     <label>Include Rising Sun <input type="checkbox" required [(ngModel)]="criteria.includeRisingSun" name="includeRisingSun"></label> <br/>
-    <label>Preset <input type="text" [(ngModel)]="criteria.preset" name="preset" /></label> <br/>
-    <label>Min Trains: <input type="text" [(ngModel)]="criteria.minTrain" name="minTrain" /></label> <br/>
+    <!-- <label>Preset <input type="text" [(ngModel)]="criteria.preset" name="preset" /></label> <br/> -->
+     <label>Min Trains: <input type="text" [(ngModel)]="criteria.minTrain" name="minTrain" /></label> <br/>
     <label>Min Rail Laying: <input type="text" [(ngModel)]="criteria.minRailLaying" name="minRailLaying" /></label> <br/>
     <label>Min Action: <input type="text" [(ngModel)]="criteria.minAction" name="minAction" /></label> <br/>
     <button type="button" (click)="submit()">Go</button>
