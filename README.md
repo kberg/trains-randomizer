@@ -25,12 +25,15 @@ q## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
-## Notes for me.
-### Deploying to kberg.github.io/trains/
+## Deploying
 
-[Source](https://github.com/angular-schule/angular-cli-ghpages)
+### Set-up
 ```
+npm install -g @angular/cli
 npm install -g angular-cli-ghpages
-ng build --prod --base-href "trains"
-ngh
+```
+
+### Ongoing
+```
+ng deploy --no-silent  --base-href=/trains-randomizer/
 ```
