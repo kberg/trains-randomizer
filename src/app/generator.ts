@@ -19,9 +19,11 @@ export function generate(criteria: Criteria) {
   var risingSunPredicate = criteria.includeRisingSun ? setPredicate(Set.RisingSun) : falsePredicate;
   var coastalTidesPredicate = criteria.includeCoastalTides ? setPredicate(Set.CoastalTides) : falsePredicate;
 
-  // Start by collecting the base cards -- these come from the Trains set, and not from the
-  // Rising Sun set. Which could be a criterion, I guess.
-  var baseCards = CARDS.filter(c => trainsPredicate(c) && c.base);
+  // Start by collecting the base cards. At least one of trains and rising sun sets have to be
+  // included. It only prefers the Rising Sun base cards when Trains is not a selected card set.
+  // TODO: add criterion that selects the base cards from Rising Sun even when Trains is selected.
+  var baseCardsPredicate = criteria.includeTrains ? trainsPredicate : risingSunPredicate;
+  var baseCards = CARDS.filter(c => baseCardsPredicate(c) && c.base);
 
   // candidateCards represent non-base cards, filtered by predicate.
   var candidateCards =
