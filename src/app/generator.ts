@@ -3,7 +3,7 @@ import { CARDS, Set, Type, Card } from "./card";
 
 export function generate(criteria: Criteria) {
   if (!(criteria.includeTrains || criteria.includeRisingSun)) {
-    throw new Error("Criteria must include at least one set.");
+    throw new Error("Criteria must include at least one set with base cards.");
   }
   if (criteria.minAction + criteria.minRailLaying + criteria.minTrain > 8) {
     throw new Error("Too many card minimums");
@@ -15,13 +15,16 @@ export function generate(criteria: Criteria) {
   
   var trainsPredicate = setPredicate(Set.Trains);
   var risingSunPredicate = setPredicate(Set.RisingSun);
+  var coastalTidesPredicate = setPredicate(Set.CoastalTides);
+
   // Assume Trains base for now.
   var baseCards = CARDS.filter(c => trainsPredicate(c) && c.base);
   var candidateCards =
       CARDS
         .filter(c => !c.base)
         .filter(c => (criteria.includeTrains && trainsPredicate(c)) ||
-             (criteria.includeRisingSun && risingSunPredicate(c)));
+             (criteria.includeRisingSun && risingSunPredicate(c)) ||
+             (criteria.includeCoastalTides && coastalTidesPredicate(c)));
 
   // Finding cards works like this: for each minimum, deal from the top, and deal out
   // that many cards.

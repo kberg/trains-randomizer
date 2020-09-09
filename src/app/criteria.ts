@@ -6,6 +6,7 @@ export class Criteria {
   set : Set;
   includeTrains: boolean;
   includeRisingSun: boolean;
+  includeCoastalTides: boolean;
   preset: string;
   minTrain: number;
   minRailLaying: number;
