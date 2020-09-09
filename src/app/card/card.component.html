@@ -3,6 +3,6 @@
   <div [ngClass]="cardColor()">
     <div [className]="'buffer'"></div>
     <div [className]="'name'">{{card.name}}</div>
-    <span [className]="'type'">{{card.type}}</span>
+    <span [className]="'type'">{{card.type}} {{ card.attack ? " (*)" : ""}}</span>
   </div>
 </div>
