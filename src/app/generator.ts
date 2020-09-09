@@ -13,18 +13,22 @@ export function generate(criteria: Criteria) {
     return function(c) { return c.sets.includes(set); }
   }
   
-  var trainsPredicate = setPredicate(Set.Trains);
-  var risingSunPredicate = setPredicate(Set.RisingSun);
-  var coastalTidesPredicate = setPredicate(Set.CoastalTides);
+  var falsePredicate = function(c) { return false; };
+  
+  var trainsPredicate = criteria.includeTrains ? setPredicate(Set.Trains) : falsePredicate;
+  var risingSunPredicate = criteria.includeRisingSun ? setPredicate(Set.RisingSun) : falsePredicate;
+  var coastalTidesPredicate = criteria.includeCoastalTides ? setPredicate(Set.CoastalTides) : falsePredicate;
+  var attackCardsPredicate = criteria.includeAttackCards ? function(c) { return c.includeAttackCards } : falsePredicate;
 
-  // Assume Trains base for now.
+  // Start by collecting the base cards -- these come from the Trains set, and not from the
+  // Rising Sun set. Which could be a criterion, I guess.
   var baseCards = CARDS.filter(c => trainsPredicate(c) && c.base);
+
+  // candidateCards represent non-base cards, filtered by predicate.
   var candidateCards =
       CARDS
         .filter(c => !c.base)
-        .filter(c => (criteria.includeTrains && trainsPredicate(c)) ||
-             (criteria.includeRisingSun && risingSunPredicate(c)) ||
-             (criteria.includeCoastalTides && coastalTidesPredicate(c)));
+        .filter(trainsPredicate || risingSunPredicate || coastalTidesPredicate || attackCardsPredicate)
 
   // Finding cards works like this: for each minimum, deal from the top, and deal out
   // that many cards.
