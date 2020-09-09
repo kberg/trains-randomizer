@@ -7,9 +7,9 @@ export class Criteria {
   includeTrains: boolean;
   includeRisingSun: boolean;
   includeCoastalTides: boolean;
-  includeAttackCards: boolean;
   preset: string;
   minTrain: number;
   minRailLaying: number;
   minAction: number;
+  minAttack: number;
 }

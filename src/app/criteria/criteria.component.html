@@ -4,12 +4,12 @@
     <!-- <label>Set <input type="text" [(ngModel)]="criteria.set" name="set" /></label> <br/> -->
     <label>Include Trains <input type="checkbox" required [(ngModel)]="criteria.includeTrains" name="includeTrains"></label> <br/>
     <label>Include Rising Sun <input type="checkbox" required [(ngModel)]="criteria.includeRisingSun" name="includeRisingSun"></label> <br/>
-    <label>Include Rising Sun Attack Cards <input type="checkbox" required [(ngModel)]="criteria.includeAttackCards" name="includeAttackCards"></label> <br/>
     <label>Include Coastal Tides <input type="checkbox" required [(ngModel)]="criteria.includeCoastalTides" name="includeCoastalTides"></label> <br/>
     <!-- <label>Preset <input type="text" [(ngModel)]="criteria.preset" name="preset" /></label> <br/> -->
-     <label>Min Trains: <input type="text" [(ngModel)]="criteria.minTrain" name="minTrain" /></label> <br/>
-    <label>Min Rail Laying: <input type="text" [(ngModel)]="criteria.minRailLaying" name="minRailLaying" /></label> <br/>
-    <label>Min Action: <input type="text" [(ngModel)]="criteria.minAction" name="minAction" /></label> <br/>
+     <label>Min Trains: <input type="number" min="0" max="10" [(ngModel)]="criteria.minTrain" name="minTrain" /></label> <br/>
+    <label>Min Rail Laying: <input type="number" min="0" max="10" [(ngModel)]="criteria.minRailLaying" name="minRailLaying" /></label> <br/>
+    <label>Min non-Attack Action cards): <input type="number" min="0" max="10" [(ngModel)]="criteria.minAction" name="minAction" /></label> <br/>
+    <label>Min Attack Cards (requires Rising Sun): <input type="number" min="0" max="10" [(ngModel)]="criteria.minAttack" name="minAttack" /></label> <br/>
     <button type="button" (click)="submit()">Go</button>
   </form>
   <!-- <pre>criteria = {{criteria | json}}</pre> -->

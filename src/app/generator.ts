@@ -5,7 +5,7 @@ export function generate(criteria: Criteria) {
   if (!(criteria.includeTrains || criteria.includeRisingSun)) {
     throw new Error("Criteria must include at least one set with base cards.");
   }
-  if (criteria.minAction + criteria.minRailLaying + criteria.minTrain > 8) {
+  if (criteria.minAction + criteria.minRailLaying + criteria.minTrain + criteria.minAttack > 8) {
     throw new Error("Too many card minimums");
   }
 
@@ -18,7 +18,6 @@ export function generate(criteria: Criteria) {
   var trainsPredicate = criteria.includeTrains ? setPredicate(Set.Trains) : falsePredicate;
   var risingSunPredicate = criteria.includeRisingSun ? setPredicate(Set.RisingSun) : falsePredicate;
   var coastalTidesPredicate = criteria.includeCoastalTides ? setPredicate(Set.CoastalTides) : falsePredicate;
-  var attackCardsPredicate = criteria.includeAttackCards ? function(c) { return c.includeAttackCards } : falsePredicate;
 
   // Start by collecting the base cards -- these come from the Trains set, and not from the
   // Rising Sun set. Which could be a criterion, I guess.
@@ -28,7 +27,7 @@ export function generate(criteria: Criteria) {
   var candidateCards =
       CARDS
         .filter(c => !c.base)
-        .filter(trainsPredicate || risingSunPredicate || coastalTidesPredicate || attackCardsPredicate)
+        .filter(c => (trainsPredicate(c) || risingSunPredicate(c) || coastalTidesPredicate(c)))
 
   // Finding cards works like this: for each minimum, deal from the top, and deal out
   // that many cards.
@@ -37,12 +36,12 @@ export function generate(criteria: Criteria) {
   var shuffled = shuffle(candidateCards);
   var randomCards: Card[] = [];
 
-  function choose(count: number, type: Type) {
+  function choose(count: number, type: Type, attack ?: boolean) {
     var cardIdx = 0;
     var selectedCount = 0;
     while (selectedCount < count && cardIdx < shuffled.length) {
       var card = shuffled[cardIdx];
-      if (card.type == type) {
+      if (card.type == type && card.attack == attack) {
         randomCards.push(card);
         shuffled.splice(cardIdx, 1);
         selectedCount++;
@@ -52,7 +51,8 @@ export function generate(criteria: Criteria) {
     }  
   }
 
-  choose(criteria.minAction, Type.Action);
+  choose(criteria.minAction, Type.Action, false);
+  choose(criteria.minAttack, Type.Action, true);
   choose(criteria.minRailLaying, Type.RailLaying);
   choose(criteria.minTrain, Type.Train);
 
