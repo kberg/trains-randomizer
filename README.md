@@ -28,7 +28,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## Notes for me.
 ### Deploying to kberg.github.io/trains/
 
-[Source](https://www.digitalocean.com/community/tutorials/angular-deploying-angular-app-github-pages)
+[Source](https://github.com/angular-schule/angular-cli-ghpages)
 ```
 npm install -g angular-cli-ghpages
 ng build --prod --base-href "trains"
