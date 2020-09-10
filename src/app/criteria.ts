@@ -21,7 +21,7 @@ export class TypeCriterion {
   maxEnabled: boolean;
   type: Type;
 
-  constructor(type: Type, min ?: number) {
+  constructor(type: Type, min: number) {
     this.type = type;
     this.min = min;
   }

@@ -24,8 +24,8 @@
         <td>Trains</td>
         <td><input type="number" min="0" max="10" [(ngModel)]="criteria.train.min" name="minTrain" /></td>
         <td>
-          <label><input type="checkbox" [(ngModel)]="criteria.train.maxEnabled" name="maxTrainEnabled"/></label>
-          <input type="number" min="-1" max="10" [(ngModel)]="criteria.train.max" name="maxTrain" />
+          <label><input type="checkbox" [(ngModel)]="criteria.train.maxEnabled" name="maxTrainEnabled" /></label>
+          <input type="number" min="-1" max="10" [(ngModel)]="criteria.train.max" name="maxTrain" [disabled]="!criteria.train.maxEnabled" />
         </td>
       </tr>
       <tr>
@@ -33,7 +33,7 @@
         <td><input type="number" min="0" max="10" [(ngModel)]="criteria.railLaying.min" name="minRailLaying" /></td>
         <td>
           <label><input type="checkbox" [(ngModel)]="criteria.railLaying.maxEnabled" name="maxRailLayingEnabled"/></label>
-          <input type="number" min="-1" max="10" [(ngModel)]="criteria.railLaying.max" name="maxRailLaying" />
+          <input type="number" min="-1" max="10" [(ngModel)]="criteria.railLaying.max" name="maxRailLaying" [disabled]="!criteria.railLaying.maxEnabled" />
         </td>
       </tr>
       <tr>
@@ -41,7 +41,7 @@
         <td><input type="number" min="0" max="10" [(ngModel)]="criteria.action.min" name="minAction" /></td>
         <td>
           <label><input type="checkbox" [(ngModel)]="criteria.action.maxEnabled" name="maxActionEnabled"/></label>
-          <input type="number" min="-1" max="10" [(ngModel)]="criteria.action.max" name="maxAction" />
+          <input type="number" min="-1" max="10" [(ngModel)]="criteria.action.max" name="maxAction" [disabled]="!criteria.action.maxEnabled" />
         </td>
       </tr>
       <tr>
@@ -49,7 +49,7 @@
         <td><input type="number" min="0" max="10" [(ngModel)]="criteria.attack.min" name="minAttack" /></td>
         <td>
           <label><input type="checkbox" [(ngModel)]="criteria.attack.maxEnabled" name="maxAttackEnabled"/></label>
-          <input type="number" min="-1" max="10" [(ngModel)]="criteria.attack.max" name="maxAttack" />
+          <input type="number" min="-1" max="10" [(ngModel)]="criteria.attack.max" name="maxAttack" [disabled]="!criteria.attack.maxEnabled" />
         </td>
       </tr>
     </table>

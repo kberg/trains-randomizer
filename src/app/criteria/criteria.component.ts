@@ -22,7 +22,7 @@ export class CriteriaComponent implements OnInit {
     this.criteria.includeTrains = true;
 
     this.criteria.action = new TypeCriterion(Type.Action, 3);
-    this.criteria.attack = new TypeCriterion(Type.Attack);
+    this.criteria.attack = new TypeCriterion(Type.Attack, 0);
     this.criteria.train = new TypeCriterion(Type.Train, 2);
     this.criteria.railLaying = new TypeCriterion(Type.RailLaying, 2);
     this.cards = [];
