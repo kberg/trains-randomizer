@@ -1,12 +1,26 @@
 import { Criteria, TypeCriterion } from "./criteria";
 import { CARDS, Set, Type, Card } from "./card";
 
+var ADDITIONAL_CARDS_SIZE = 8;
+
 export function generate(criteria: Criteria) {
   if (!(criteria.includeTrains || criteria.includeRisingSun)) {
     throw new Error("Criteria must include at least one set with base cards.");
   }
-  if (criteria.action.min + criteria.railLaying.min + criteria.train.min + criteria.attack.min > 8) {
-    throw new Error("Too many card minimums");
+
+  var criteriaMap: Map<Type, TypeCriterion> = new Map();
+  criteriaMap.set(Type.Action, criteria.action);
+  criteriaMap.set(Type.Attack, criteria.attack);
+  criteriaMap.set(Type.RailLaying, criteria.railLaying);
+  criteriaMap.set(Type.StationExpansion, criteria.stationExpansion);
+  criteriaMap.set(Type.Train, criteria.train);
+  criteriaMap.set(Type.VictoryPoints, criteria.vp);
+
+  let totalMinimums: number = 0;
+  criteriaMap.forEach(v => totalMinimums += v.min);
+
+  if (totalMinimums > ADDITIONAL_CARDS_SIZE) {
+    throw new Error("Too many card minimums: " + totalMinimums + " can't be more than " + ADDITIONAL_CARDS_SIZE);
   }
 
   function setPredicate(set: Set) {
@@ -53,14 +67,6 @@ export function generate(criteria: Criteria) {
     }
   }
 
-  var criteriaMap: Map<Type, TypeCriterion> = new Map();
-  criteriaMap.set(Type.Action, criteria.action);
-  criteriaMap.set(Type.Attack, criteria.attack);
-  criteriaMap.set(Type.RailLaying, criteria.railLaying);
-  criteriaMap.set(Type.StationExpansion, criteria.stationExpansion);
-  criteriaMap.set(Type.Train, criteria.train);
-  criteriaMap.set(Type.VictoryPoints, criteria.vp);
-
   // Fill the deck with minimums.
   criteriaMap.forEach(v => choose(v));
 
@@ -73,7 +79,7 @@ export function generate(criteria: Criteria) {
   shuffled = shuffle(shuffled);
   
   var cardIdx = 0;
-  while (randomCards.length < 8 && cardIdx < shuffled.length) {
+  while (randomCards.length < ADDITIONAL_CARDS_SIZE && cardIdx < shuffled.length) {
     var card = shuffled[cardIdx];
     var type = card.type;
     if (limitByType[type] > 0) {
@@ -86,7 +92,7 @@ export function generate(criteria: Criteria) {
   }
 
   console.log("Pending total: " + randomCards.length);
-  for (var idx = 0; randomCards.length < 8; idx++) {
+  for (var idx = 0; randomCards.length < ADDITIONAL_CARDS_SIZE; idx++) {
      randomCards.push(shuffled[idx]);
   }
 
