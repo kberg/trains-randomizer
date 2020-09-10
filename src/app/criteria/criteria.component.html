@@ -1,22 +1,69 @@
 <h2>Criteria:</h2>
 <div>
   <form novalidate #criteriaForm="ngForm">
-    <!-- <label>Set <input type="text" [(ngModel)]="criteria.set" name="set" /></label> <br/> -->
+    <table>
+    <tr>
+      <td>
+
+    <div [className]="'heading'">Decks</div>
     <label>Include Trains <input type="checkbox" required [(ngModel)]="criteria.includeTrains" name="includeTrains"></label> <br/>
     <label>Include Rising Sun <input type="checkbox" required [(ngModel)]="criteria.includeRisingSun" name="includeRisingSun"></label> <br/>
     <label>Include Coastal Tides <input type="checkbox" required [(ngModel)]="criteria.includeCoastalTides" name="includeCoastalTides"></label> <br/>
+    <div [className]="'todo'">TODO: Include Sea Bridge</div>
+
+    <br/>
+  </td>
+  <td width="30px"></td>
+  <td>
+
     <!-- <label>Preset <input type="text" [(ngModel)]="criteria.preset" name="preset" /></label> <br/> -->
-     <label>Min Trains: <input type="number" min="0" max="10" [(ngModel)]="criteria.minTrain" name="minTrain" /></label> <br/>
-    <label>Min Rail Laying: <input type="number" min="0" max="10" [(ngModel)]="criteria.minRailLaying" name="minRailLaying" /></label> <br/>
-    <label>Min non-Attack Action cards): <input type="number" min="0" max="10" [(ngModel)]="criteria.minAction" name="minAction" /></label> <br/>
-    <label>Min Attack Cards (requires Rising Sun): <input type="number" min="0" max="10" [(ngModel)]="criteria.minAttack" name="minAttack" /></label> <br/>
-    <button type="button" (click)="submit()">Go</button>
+    <div [className]="'heading'">Additional cards</div>
+    <table border=1>
+      <tr><th></th><th>At least</th><th>But no more than</th></tr>
+      <tr>
+        <td>Trains</td>
+        <td><input type="number" min="0" max="10" [(ngModel)]="criteria.train.min" name="minTrain" /></td>
+        <td>
+          <label><input type="checkbox" [(ngModel)]="criteria.train.maxEnabled" name="maxTrainEnabled"/></label>
+          <input type="number" min="-1" max="10" [(ngModel)]="criteria.train.max" name="maxTrain" />
+        </td>
+      </tr>
+      <tr>
+        <td>Lay Rail</td>
+        <td><input type="number" min="0" max="10" [(ngModel)]="criteria.railLaying.min" name="minRailLaying" /></td>
+        <td>
+          <label><input type="checkbox" [(ngModel)]="criteria.railLaying.maxEnabled" name="maxRailLayingEnabled"/></label>
+          <input type="number" min="-1" max="10" [(ngModel)]="criteria.railLaying.max" name="maxRailLaying" />
+        </td>
+      </tr>
+      <tr>
+        <td>Action (non-attack)</td>
+        <td><input type="number" min="0" max="10" [(ngModel)]="criteria.action.min" name="minAction" /></td>
+        <td>
+          <label><input type="checkbox" [(ngModel)]="criteria.action.maxEnabled" name="maxActionEnabled"/></label>
+          <input type="number" min="-1" max="10" [(ngModel)]="criteria.action.max" name="maxAction" />
+        </td>
+      </tr>
+      <tr>
+        <td>Attack Actions</td>
+        <td><input type="number" min="0" max="10" [(ngModel)]="criteria.attack.min" name="minAttack" /></td>
+        <td>
+          <label><input type="checkbox" [(ngModel)]="criteria.attack.maxEnabled" name="maxAttackEnabled"/></label>
+          <input type="number" min="-1" max="10" [(ngModel)]="criteria.attack.max" name="maxAttack" />
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+  </table>
+  <button type="button" (click)="submit()">Go</button>
   </form>
   <!-- <pre>criteria = {{criteria | json}}</pre> -->
 </div>
 
 <div [className]="'grid-container'">
   <div [className]="'grid-item'" *ngFor="let card of cards">
-      <app-card [card]="card"></app-card>
+    <app-card [card]="card"></app-card>
   </div>
 </div>

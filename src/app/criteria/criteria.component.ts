@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Set, Type, Card} from '../card';
-import { Criteria } from '../criteria';
+import { Criteria, TypeCriterion } from '../criteria';
 import { generate } from '../generator';
+
 @Component({
   selector: 'app-criteria',
   templateUrl: './criteria.component.html',
@@ -11,18 +12,21 @@ export class CriteriaComponent implements OnInit {
 
   criteria: Criteria;
   cards: Card[];
-  
+
   constructor() { }
 
   // https://boardgamegeek.com/thread/1373087/not-so-random-randomizer
 
   ngOnInit() {
     this.criteria = new Criteria();
-    this.criteria.minAction = 3;
-    this.criteria.minRailLaying = 2;
-    this.criteria.minTrain = 2;
     this.criteria.includeTrains = true;
+
+    this.criteria.action = new TypeCriterion(Type.Action, 3);
+    this.criteria.attack = new TypeCriterion(Type.Attack);
+    this.criteria.train = new TypeCriterion(Type.Train, 2);
+    this.criteria.railLaying = new TypeCriterion(Type.RailLaying, 2);
     this.cards = [];
+    this.cards = undefined;
   }
 
   submit() {

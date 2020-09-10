@@ -1,4 +1,4 @@
-import { Set } from './card';
+import { Set, Type } from './card';
 
 // https://boardgamegeek.com/thread/1373087/not-so-random-randomizer
 
@@ -8,8 +8,21 @@ export class Criteria {
   includeRisingSun: boolean;
   includeCoastalTides: boolean;
   preset: string;
-  minTrain: number;
-  minRailLaying: number;
-  minAction: number;
-  minAttack: number;
+
+  action : TypeCriterion;
+  attack : TypeCriterion;
+  railLaying : TypeCriterion;
+  train : TypeCriterion;
+}
+
+export class TypeCriterion {
+  min: number;
+  max: number;
+  maxEnabled: boolean;
+  type: Type;
+
+  constructor(type: Type, min ?: number) {
+    this.type = type;
+    this.min = min;
+  }
 }

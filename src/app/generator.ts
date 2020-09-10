@@ -1,11 +1,11 @@
-import { Criteria } from "./criteria";
+import { Criteria, TypeCriterion } from "./criteria";
 import { CARDS, Set, Type, Card } from "./card";
 
 export function generate(criteria: Criteria) {
   if (!(criteria.includeTrains || criteria.includeRisingSun)) {
     throw new Error("Criteria must include at least one set with base cards.");
   }
-  if (criteria.minAction + criteria.minRailLaying + criteria.minTrain + criteria.minAttack > 8) {
+  if (criteria.action.min + criteria.railLaying.min + criteria.train.min + criteria.attack.min > 8) {
     throw new Error("Too many card minimums");
   }
 
@@ -38,30 +38,44 @@ export function generate(criteria: Criteria) {
   var shuffled = shuffle(candidateCards);
   var randomCards: Card[] = [];
 
-  function choose(count: number, type: Type, attack ?: boolean) {
+  function choose(c: TypeCriterion) {
     var cardIdx = 0;
     var selectedCount = 0;
-    while (selectedCount < count && cardIdx < shuffled.length) {
+    while (selectedCount < c.min && cardIdx < shuffled.length) {
       var card = shuffled[cardIdx];
-      if (card.type == type && card.attack == attack) {
+      if (card.type == c.type) {
         randomCards.push(card);
         shuffled.splice(cardIdx, 1);
         selectedCount++;
       } else {
         cardIdx++;
       }
-    }  
+    }
   }
 
-  choose(criteria.minAction, Type.Action, false);
-  choose(criteria.minAttack, Type.Action, true);
-  choose(criteria.minRailLaying, Type.RailLaying);
-  choose(criteria.minTrain, Type.Train);
+  // Fill the deck with minimums.
+  choose(criteria.action);
+  choose(criteria.attack);
+  choose(criteria.railLaying);
+  choose(criteria.train);
 
+  // roomByType counts down to zero for each available type. Once a count is zero, no more are added.
+  var roomByType: Map<Type, Number> = new Map();
+  // roomByType[Type.Action] = criteria.maxAction - criteria.minAction;
+  // roomByType[Type.Attack] = criteria.attack.max - criteria.attack.min;
+  // roomByType[Type.RailLaying] = criteria.maxRailLaying - criteria.minRailLaying;
+  // roomByType[Type.Train] = criteria.maxTrain - criteria.minTrain;
+
+  // Fill the rest of the deck with arbitrary cards, respecting maximums
   shuffled = shuffle(shuffled);
+  
+  // for (var card in shuffled) {
+  //   var type = card.type;
+  // }
   for (var idx = randomCards.length; idx < 8; idx++) {
      randomCards.push(shuffled[idx]);
   }
+
   return baseCards.concat(randomCards);
 }
 
