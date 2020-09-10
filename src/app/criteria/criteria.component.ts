@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Type, Card} from '../card';
 import { Criteria, TypeCriterion } from '../criteria';
 import { generate } from '../generator';
+import { Random2 } from '../random';
+import { Parameters } from './parameters';
 
 @Component({
   selector: 'app-criteria',
@@ -12,6 +14,7 @@ export class CriteriaComponent implements OnInit {
 
   criteria: Criteria;
   cards: Card[];
+  repeatable_param: string
 
   constructor() {
   }
@@ -32,50 +35,13 @@ export class CriteriaComponent implements OnInit {
     return c;
   }
 
-  static parseCriteria(params : URLSearchParams): Criteria {
-    var c = new Criteria();
-    var decks = params.get("decks");
-    if (decks.indexOf("tr") > 0) {
-      c.includeTrains = true;
-    }
-    if (decks.indexOf("rs") > 0) {
-      c.includeRisingSun = true;
-    }
-    if (decks.indexOf("ct") > 0) {
-      c.includeCoastalTides = true;
-    }    
-
-    function toTC(t: Type, input: String) {
-      input = input || "";
-      var inputs = input.split(",");
-      var c = s => { var i = parseInt(s); return isNaN(i) ? undefined : i;};
-
-      if (inputs.length > 1) {
-        return new TypeCriterion(t, c(inputs[0]), c(inputs[1]));
-      } else if (inputs.length == 1) {
-        return new TypeCriterion(t, c(inputs[0]));
-      } else {
-        return new TypeCriterion(t, 0);
-      }
-    }
-
-    c.action = toTC(Type.Action, params.get("a"));
-    c.attack = toTC(Type.Attack, params.get("k"));
-    c.railLaying = toTC(Type.RailLaying, params.get("r"));
-    c.stationExpansion = toTC(Type.StationExpansion, params.get("s"));
-    c.train = toTC(Type.Train, params.get("t"));
-    c.vp = toTC(Type.VictoryPoints, params.get("v"));
-
-    return c;
-  }
-
   ngOnInit() {
     const queryString = window.location.search;
     const params = new URLSearchParams(queryString);
   
     var criteria = CriteriaComponent.defaultCriteria();
     if (params.has("c")) {
-      criteria = CriteriaComponent.parseCriteria(params)      
+      criteria = Parameters.toCriteria(params);   
     }
 
     criteria.seed = parseInt(params.get("seed"));
@@ -86,6 +52,11 @@ export class CriteriaComponent implements OnInit {
   }
 
   submit() {
-    this.cards = generate(this.criteria);
+    var criteria = this.criteria;
+    var seed = criteria.seed ? criteria.seed : Math.round(Math.random() * 10000000);
+    var rng = Random2.seeded(seed)
+
+    this.cards = generate(this.criteria, rng);
+    this.repeatable_param = Parameters.fromCriteria(this.criteria, seed).toString();
   }
 }
