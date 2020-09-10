@@ -12,7 +12,9 @@ export class Criteria {
   action : TypeCriterion;
   attack : TypeCriterion;
   railLaying : TypeCriterion;
+  stationExpansion: TypeCriterion;
   train : TypeCriterion;
+  vp : TypeCriterion;
 }
 
 export class TypeCriterion {
@@ -21,8 +23,12 @@ export class TypeCriterion {
   maxEnabled: boolean;
   type: Type;
 
-  constructor(type: Type, min: number) {
+  constructor(type: Type, min: number, max ?: number) {
     this.type = type;
     this.min = min;
+    if (max) {
+      this.max = max;
+      this.maxEnabled = true;
+    }
   }
 }

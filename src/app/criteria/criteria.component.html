@@ -25,7 +25,7 @@
         <td><input type="number" min="0" max="10" [(ngModel)]="criteria.train.min" name="minTrain" /></td>
         <td>
           <label><input type="checkbox" [(ngModel)]="criteria.train.maxEnabled" name="maxTrainEnabled" /></label>
-          <input type="number" min="-1" max="10" [(ngModel)]="criteria.train.max" name="maxTrain" [disabled]="!criteria.train.maxEnabled" />
+          <input type="number" min="0" max="10" [(ngModel)]="criteria.train.max" name="maxTrain" [disabled]="!criteria.train.maxEnabled" />
         </td>
       </tr>
       <tr>
@@ -33,7 +33,7 @@
         <td><input type="number" min="0" max="10" [(ngModel)]="criteria.railLaying.min" name="minRailLaying" /></td>
         <td>
           <label><input type="checkbox" [(ngModel)]="criteria.railLaying.maxEnabled" name="maxRailLayingEnabled"/></label>
-          <input type="number" min="-1" max="10" [(ngModel)]="criteria.railLaying.max" name="maxRailLaying" [disabled]="!criteria.railLaying.maxEnabled" />
+          <input type="number" min="0" max="10" [(ngModel)]="criteria.railLaying.max" name="maxRailLaying" [disabled]="!criteria.railLaying.maxEnabled" />
         </td>
       </tr>
       <tr>
@@ -41,7 +41,23 @@
         <td><input type="number" min="0" max="10" [(ngModel)]="criteria.action.min" name="minAction" /></td>
         <td>
           <label><input type="checkbox" [(ngModel)]="criteria.action.maxEnabled" name="maxActionEnabled"/></label>
-          <input type="number" min="-1" max="10" [(ngModel)]="criteria.action.max" name="maxAction" [disabled]="!criteria.action.maxEnabled" />
+          <input type="number" min="0" max="10" [(ngModel)]="criteria.action.max" name="maxAction" [disabled]="!criteria.action.maxEnabled" />
+        </td>
+      </tr>
+      <tr>
+        <td>Station Expansion</td>
+        <td><input type="number" min="0" max="10" [(ngModel)]="criteria.stationExpansion.min" name="minStationExpansion" /></td>
+        <td>
+          <label><input type="checkbox" [(ngModel)]="criteria.stationExpansion.maxEnabled" name="maxStationExpansion"/></label>
+          <input type="number" min="0" max="10" [(ngModel)]="criteria.stationExpansion.max" name="maxStationExpansion" [disabled]="!criteria.stationExpansion.maxEnabled" />
+        </td>
+      </tr>
+      <tr>
+        <td>VP</td>
+        <td><input type="number" min="0" max="10" [(ngModel)]="criteria.vp.min" name="minVp" /></td>
+        <td>
+          <label><input type="checkbox" [(ngModel)]="criteria.vp.maxEnabled" name="maxVpEnabled"/></label>
+          <input type="number" min="0" max="10" [(ngModel)]="criteria.vp.max" name="maxVp" [disabled]="!criteria.vp.maxEnabled" />
         </td>
       </tr>
       <tr>
@@ -49,7 +65,7 @@
         <td><input type="number" min="0" max="10" [(ngModel)]="criteria.attack.min" name="minAttack" /></td>
         <td>
           <label><input type="checkbox" [(ngModel)]="criteria.attack.maxEnabled" name="maxAttackEnabled"/></label>
-          <input type="number" min="-1" max="10" [(ngModel)]="criteria.attack.max" name="maxAttack" [disabled]="!criteria.attack.maxEnabled" />
+          <input type="number" min="0" max="10" [(ngModel)]="criteria.attack.max" name="maxAttack" [disabled]="!criteria.attack.maxEnabled" />
         </td>
       </tr>
     </table>

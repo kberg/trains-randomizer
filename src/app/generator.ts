@@ -53,26 +53,40 @@ export function generate(criteria: Criteria) {
     }
   }
 
-  // Fill the deck with minimums.
-  choose(criteria.action);
-  choose(criteria.attack);
-  choose(criteria.railLaying);
-  choose(criteria.train);
+  var criteriaMap: Map<Type, TypeCriterion> = new Map();
+  criteriaMap.set(Type.Action, criteria.action);
+  criteriaMap.set(Type.Attack, criteria.attack);
+  criteriaMap.set(Type.RailLaying, criteria.railLaying);
+  criteriaMap.set(Type.StationExpansion, criteria.stationExpansion);
+  criteriaMap.set(Type.Train, criteria.train);
+  criteriaMap.set(Type.VictoryPoints, criteria.vp);
 
-  // roomByType counts down to zero for each available type. Once a count is zero, no more are added.
-  var roomByType: Map<Type, Number> = new Map();
-  // roomByType[Type.Action] = criteria.maxAction - criteria.minAction;
-  // roomByType[Type.Attack] = criteria.attack.max - criteria.attack.min;
-  // roomByType[Type.RailLaying] = criteria.maxRailLaying - criteria.minRailLaying;
-  // roomByType[Type.Train] = criteria.maxTrain - criteria.minTrain;
+  // Fill the deck with minimums.
+  criteriaMap.forEach(v => choose(v));
+
+  // limitByType counts down to zero for each available type. Once a count is zero, no more are added.
+  // So if maxEnabled is false, the max is 100, effectively infinity.
+  var limitByType: Map<Type, Number> = new Map();
+  criteriaMap.forEach((v, k) => limitByType.set(k, v.maxEnabled ? v.max - v.min : 100));
 
   // Fill the rest of the deck with arbitrary cards, respecting maximums
   shuffled = shuffle(shuffled);
   
-  // for (var card in shuffled) {
-  //   var type = card.type;
-  // }
-  for (var idx = randomCards.length; idx < 8; idx++) {
+  var cardIdx = 0;
+  while (randomCards.length < 8 && cardIdx < shuffled.length) {
+    var card = shuffled[cardIdx];
+    var type = card.type;
+    if (limitByType[type] > 0) {
+      randomCards.push(card);
+      shuffled.splice(cardIdx, 1);
+      limitByType[type]--;
+    } else {
+      cardIdx++;
+    }
+  }
+
+  console.log("Pending total: " + randomCards.length);
+  for (var idx = 0; randomCards.length < 8; idx++) {
      randomCards.push(shuffled[idx]);
   }
 
