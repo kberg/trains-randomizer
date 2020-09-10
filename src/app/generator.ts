@@ -1,9 +1,11 @@
 import { Criteria, TypeCriterion } from "./criteria";
 import { CARDS, Set, Type, Card } from "./card";
+import { RNG, Random2 } from "./random";
 
 var ADDITIONAL_CARDS_SIZE = 8;
 
 export function generate(criteria: Criteria) {
+  var rng = criteria.seed ? Random2.seeded(criteria.seed) : Random2.unseeded();
   if (!(criteria.includeTrains || criteria.includeRisingSun)) {
     throw new Error("Criteria must include at least one set with base cards.");
   }
@@ -49,7 +51,7 @@ export function generate(criteria: Criteria) {
   // that many cards.
   // Afterwards, shuffle once more, and deal out to fill the deck.
 
-  var shuffled = shuffle(candidateCards);
+  var shuffled = shuffle(candidateCards, rng);
   var randomCards: Card[] = [];
 
   function choose(c: TypeCriterion) {
@@ -76,7 +78,7 @@ export function generate(criteria: Criteria) {
   criteriaMap.forEach((v, k) => limitByType.set(k, v.maxEnabled ? v.max - v.min : 100));
 
   // Fill the rest of the deck with arbitrary cards, respecting maximums
-  shuffled = shuffle(shuffled);
+  shuffled = shuffle(shuffled, rng);
   
   var cardIdx = 0;
   while (randomCards.length < ADDITIONAL_CARDS_SIZE && cardIdx < shuffled.length) {
@@ -100,7 +102,7 @@ export function generate(criteria: Criteria) {
 }
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-function shuffle(array) {
+function shuffle(array, rng: RNG) {
   var currentIndex = array.length;
   var temporaryValue;
   var randomIndex;
@@ -109,7 +111,7 @@ function shuffle(array) {
   while (0 !== currentIndex) {
 
     // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
+    randomIndex = Math.floor(rng.next() * currentIndex);
     currentIndex -= 1;
 
     // And swap it with the current element.

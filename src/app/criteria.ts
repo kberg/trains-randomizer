@@ -15,6 +15,10 @@ export class Criteria {
   stationExpansion: TypeCriterion;
   train : TypeCriterion;
   vp : TypeCriterion;
+
+  // random number generator seed.
+  // undefined for standard RNG.
+  seed: number;
 }
 
 export class TypeCriterion {
