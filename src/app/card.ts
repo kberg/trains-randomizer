@@ -1,11 +1,12 @@
 export enum Set {
-  Trains,
-  RisingSun,
-  CoastalTides
+  Trains = "tr",
+  RisingSun = "rs",
+  CoastalTides = "ct"
 }
 
 export enum Type {
   Action = "Action",
+  Attack = "Attack",
   RailLaying = "Rail Laying",
   StationExpansion = "Station Expansion",
   Train = "Train",
@@ -19,21 +20,16 @@ export class Card {
   sets: Set[];
   // When true, this is one of the base cards included in all sets.
   base: boolean;
-  attack: boolean;
 
-  constructor(name: string, type: Type, sets: Set[], base?: boolean, attack?: boolean) {
+  constructor(name: string, type: Type, sets: Set[], base?: boolean) {
     this.name = name;
     this.type = type;
     this.sets = sets;
     this.base = base;
-    this.attack = attack;
   }
 
   withBase() {
-    return new Card(this.name, this.type, this.sets, true, this.attack);
-  }
-  withAttack() {
-    return new Card(this.name, this.type, this.sets, this.base, true);
+    return new Card(this.name, this.type, this.sets, true);
   }
 }
 
@@ -77,7 +73,7 @@ export const CARDS: Card[] = [
   new Card("Junkyard",             Type.Action,           [Set.RisingSun]),
   new Card("Landfill",             Type.Action,           [Set.Trains]),
   new Card("Lay Rails",            Type.RailLaying,       [Set.Trains, Set.RisingSun]).withBase(),
-  new Card("Legal Counsel",        Type.Action,           [Set.RisingSun]).withAttack(),
+  new Card("Legal Counsel",        Type.Attack,           [Set.RisingSun]),
   new Card("Limited Express Train",Type.Train,            [Set.Trains]).withBase(),
   new Card("Limited Partnership",  Type.Action,           [Set.RisingSun]),
   new Card("Maglev Train",         Type.Train,            [Set.CoastalTides]),
@@ -92,15 +88,15 @@ export const CARDS: Card[] = [
   new Card("Outdated Train",       Type.Train,            [Set.RisingSun]).withBase(),
   new Card("Overbuilding",         Type.StationExpansion, [Set.CoastalTides]),
   new Card("Passing Station",      Type.Action,           [Set.Trains]),
-  new Card("Politician",           Type.Action,           [Set.RisingSun]).withAttack(),
+  new Card("Politician",           Type.Attack,           [Set.RisingSun]),
   new Card("Productivity",         Type.Action,           [Set.CoastalTides]),
-  new Card("Protesters",           Type.Action,           [Set.RisingSun]).withAttack(),
+  new Card("Protesters",           Type.Attack,           [Set.RisingSun]),
   new Card("Pulling",              Type.Action,           [Set.Trains]),
   new Card("Reclamation Depot",    Type.Action,           [Set.RisingSun]),
   new Card("Recycling Center",     Type.Action,           [Set.RisingSun]),
-  new Card("Regulations",          Type.Action,           [Set.RisingSun]).withAttack(),
+  new Card("Regulations",          Type.Attack,           [Set.RisingSun]),
   new Card("Return Train",         Type.Train,            [Set.CoastalTides]),
-  new Card("Roundhouse",           Type.Action,           [Set.RisingSun]).withAttack(),
+  new Card("Roundhouse",           Type.Attack,           [Set.RisingSun]),
   new Card("Ruralization",         Type.StationExpansion, [Set.CoastalTides]),
   new Card("Scenic Route",         Type.RailLaying,       [Set.CoastalTides]),
   new Card("Sea Bridge",           Type.RailLaying,       [Set.CoastalTides]),
@@ -122,7 +118,7 @@ export const CARDS: Card[] = [
   new Card("Tower",                Type.VictoryPoints,    [Set.Trains]).withBase(),
   new Card("Trail Blazer",         Type.RailLaying,       [Set.RisingSun]),
   new Card("Tunnel",               Type.RailLaying,       [Set.Trains]),
-  new Card("Unhappy Passengers",   Type.Action,           [Set.RisingSun]).withAttack(),
+  new Card("Unhappy Passengers",   Type.Attack,           [Set.RisingSun]),
   new Card("Union Contract",       Type.StationExpansion, [Set.CoastalTides]),
   new Card("Upgrade",              Type.Action,           [Set.RisingSun]),
   new Card("Viaduct",              Type.RailLaying,       [Set.Trains]),
