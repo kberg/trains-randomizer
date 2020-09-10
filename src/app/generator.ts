@@ -5,7 +5,7 @@ import { RNG, Random2 } from "./random";
 var ADDITIONAL_CARDS_SIZE = 8;
 
 export function generate(criteria: Criteria) {
-  var rng = criteria.seed ? Random2.seeded(criteria.seed) : Random2.unseeded();
+  var rng = criteria.seed ? Random2.seeded(criteria.seed) : Random2.seeded(Math.round(Random2.unseeded().next() * 10000000));
   if (!(criteria.includeTrains || criteria.includeRisingSun)) {
     throw new Error("Criteria must include at least one set with base cards.");
   }
