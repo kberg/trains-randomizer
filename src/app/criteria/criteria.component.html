@@ -76,7 +76,6 @@
   <label>RNG seed: <input type="number" [(ngModel)]="criteria.seed" name="seed"></label> Use only if you know what you're doing.<br/>
   <button type="button" (click)="submit()">Go</button>
   </form>
-  <!-- <pre>criteria = {{criteria | json}}</pre> -->
 </div>
 
 <div [className]="'grid-container'">
@@ -85,4 +84,4 @@
   </div>
 </div>
 <p></p>
-<div>Parameter to regenerate: {{repeatable_param}}</div>
+<div>If you get a set of surprising results and want support, send the contents of this text box: <input type="text" disabled>{{repeatable_param}}</input></div>
