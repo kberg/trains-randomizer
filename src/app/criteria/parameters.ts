@@ -1,51 +1,45 @@
 import { Criteria, TypeCriterion } from "../criteria";
-import { Type } from "../card";
+import type { Type } from "../card";
 
 export class Parameters {
 
-  static toTC(t: Type, input: String): TypeCriterion {
-    input = input || "";
-    var inputs = input.split(",");
-    var c = (s: string) => { var i = parseInt(s); return isNaN(i) ? undefined : i;};
+  static toTC(t: Type, input: string | null): TypeCriterion {
+    const s = input || "";
+    const parts = s.split(",");
+    const c = (str: string) => { const i = parseInt(str); return isNaN(i) ? undefined : i; };
 
-    if (inputs.length > 1) {
-      return new TypeCriterion(t, c(inputs[0]), c(inputs[1]));
-    } else if (inputs.length == 1) {
-      return new TypeCriterion(t, c(inputs[0]));
+    if (parts.length > 1) {
+      return new TypeCriterion(t, c(parts[0]) ?? 0, c(parts[1]));
+    } else if (parts.length == 1) {
+      return new TypeCriterion(t, c(parts[0]) ?? 0);
     } else {
       return new TypeCriterion(t, 0);
     }
   };
 
   static toCriteria(params: URLSearchParams): Criteria {
-    var c = new Criteria();
-    var decks = params.get("decks");
-    if (decks.indexOf("tr") >= 0) {
-      c.includeTrains = true;
-    }
-    if (decks.indexOf("rs") >= 0) {
-      c.includeRisingSun = true;
-    }
-    if (decks.indexOf("ct") >= 0) {
-      c.includeCoastalTides = true;
-    }    
- 
-    c.action = Parameters.toTC(Type.Action, params.get("a"));
-    c.attack = Parameters.toTC(Type.Attack, params.get("k"));
-    c.railLaying = Parameters.toTC(Type.RailLaying, params.get("r"));
-    c.stationExpansion = Parameters.toTC(Type.StationExpansion, params.get("s"));
-    c.train = Parameters.toTC(Type.Train, params.get("t"));
-    c.vp = Parameters.toTC(Type.VictoryPoints, params.get("v"));
- 
-    return c;
+    const decks = params.get("decks") ?? "";
+    return {
+      includeTrains: decks.indexOf("tr") >= 0,
+      includeRisingSun: decks.indexOf("rs") >= 0,
+      includeCoastalTides: decks.indexOf("ct") >= 0,
+      action: Parameters.toTC("Action", params.get("a")),
+      attack: Parameters.toTC("Attack", params.get("k")),
+      railLaying: Parameters.toTC("Rail Laying", params.get("r")),
+      stationExpansion: Parameters.toTC("Station Expansion", params.get("s")),
+      train: Parameters.toTC("Train", params.get("t")),
+      vp: Parameters.toTC("Victory Points", params.get("v")),
+      preset: "",
+      seed: NaN,
+    };
   }
 
   static fromTc(t: TypeCriterion, key: string, params: URLSearchParams) : void {
     var s = "";
-    if(t.min) {
+    if (t.min) {
       s = s + t.min;
     }
-    if (t.maxEnabled) {
+    if (t.max !== undefined) {
       s = s + "," + t.max;
     }
     if (s) {

@@ -1,26 +1,10 @@
 // http://indiegamr.com/generate-repeatable-random-numbers-in-js/
 
-export declare interface RNG {
-    next(): number
+export interface RandomNumberGenerator {
+  next(): number
 }
 
-export class Random2 {
-  private static _unseeded = new class implements RNG{
-    next(): number {
-      return Math.random();
-    }
-  };
-
-    
-  static seeded(seed: number): RNG {
-    return new SeededRandomNumberGenerator(seed);
-  }
-  static unseeded(): RNG {
-    return Random2._unseeded;
-  }
-}
-
-export class SeededRandomNumberGenerator implements RNG {
+export class SeededRandomNumberGenerator implements RandomNumberGenerator {
   private seed: number;
   constructor(seed: number) {
     this.seed = seed;
@@ -31,5 +15,4 @@ export class SeededRandomNumberGenerator implements RNG {
     var rnd = this.seed / 233280;
     return rnd;
   }
-
 }

@@ -1,4 +1,4 @@
-import { Set, Card, lookupCard } from "./card";
+import { Set, Card, lookupCard, lookupCardOrThrow } from "./card";
 
 // Recommended presets at https://boardgamegeek.com/thread/1042058/starting-card-setups-official-and-unofficial-list
 
@@ -12,7 +12,7 @@ export class Preset {
     cardNames: string[]) {
     this.set = set;
     this.name = name;
-    this.cards = cardNames.map(lookupCard);
+    this.cards = cardNames.map(lookupCardOrThrow);
   }
 }
 

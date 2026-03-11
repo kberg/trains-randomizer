@@ -1,12 +1,11 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { createApp } from 'vue'
+import App from './App.vue'
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
+const app = createApp(App)
 
-if (environment.production) {
-  enableProdMode();
+app.config.errorHandler = (err) => {
+  alert(err)
+  console.error(err)
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.log(err));
+app.mount('#app')
