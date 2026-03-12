@@ -4,7 +4,9 @@
       <div class="buffer"></div>
       <div class="name">{{ card.name }}</div>
       <span class="type">{{ card.type }}</span>
-      <div v-if="card.type === 'Attack'" class="attack-note">Attack card</div>
+      <div class="set-badges">
+        <span v-for="s in card.sets" :key="s" :class="['set-badge', 'badge-' + s]">{{ s.toUpperCase() }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -51,6 +53,7 @@ export default defineComponent({
 .base > div {
   min-height: 120px;
   padding-bottom: 10px;
+  position: relative;
 }
 
 .buffer {
@@ -85,6 +88,28 @@ export default defineComponent({
   color: rgba(255, 255, 255, 0.7);
   margin-top: 3px;
 }
+
+.set-badges {
+  position: absolute;
+  bottom: 6px;
+  right: 7px;
+  display: flex;
+  gap: 3px;
+}
+
+.set-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.badge-tr { background: rgba(0, 48, 135, 0.55); }
+.badge-rs { background: rgba(180, 80, 0, 0.55); }
+.badge-ct { background: rgba(0, 100, 120, 0.55); }
 
 .action {
   background: linear-gradient(145deg, rgb(207, 83, 83) 0%, rgb(175, 55, 55) 100%);

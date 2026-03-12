@@ -1,7 +1,7 @@
 <template>
   <h2>Criteria:</h2>
   <div>
-    <form novalidate @submit.prevent>
+    <form novalidate @submit.prevent="submit">
       <table>
         <tbody>
         <tr>
@@ -24,62 +24,32 @@
               <tr>
                 <td>Trains</td>
                 <td><input type="number" min="0" max="10" v-model.number="criteria.train.min"></td>
-                <td>
-                  <div class="max-cell">
-                    <input type="checkbox" v-model="maxEnabled.train">
-                    <input type="number" min="0" max="10" v-model.number="criteria.train.max" :disabled="!maxEnabled.train">
-                  </div>
-                </td>
+                <td><input type="number" min="0" max="10" v-model.number="criteria.train.max" placeholder="—"></td>
               </tr>
               <tr>
                 <td>Lay Rail</td>
                 <td><input type="number" min="0" max="10" v-model.number="criteria.railLaying.min"></td>
-                <td>
-                  <div class="max-cell">
-                    <input type="checkbox" v-model="maxEnabled.railLaying">
-                    <input type="number" min="0" max="10" v-model.number="criteria.railLaying.max" :disabled="!maxEnabled.railLaying">
-                  </div>
-                </td>
+                <td><input type="number" min="0" max="10" v-model.number="criteria.railLaying.max" placeholder="—"></td>
               </tr>
               <tr>
                 <td>Action (non-attack)</td>
                 <td><input type="number" min="0" max="10" v-model.number="criteria.action.min"></td>
-                <td>
-                  <div class="max-cell">
-                    <input type="checkbox" v-model="maxEnabled.action">
-                    <input type="number" min="0" max="10" v-model.number="criteria.action.max" :disabled="!maxEnabled.action">
-                  </div>
-                </td>
+                <td><input type="number" min="0" max="10" v-model.number="criteria.action.max" placeholder="—"></td>
+              </tr>
+              <tr :class="{ disabled: !criteria.includeRisingSun }">
+                <td class="attack-indent">Attack Actions</td>
+                <td><input type="number" min="0" max="10" v-model.number="criteria.attack.min" :disabled="!criteria.includeRisingSun"></td>
+                <td><input type="number" min="0" max="10" v-model.number="criteria.attack.max" :disabled="!criteria.includeRisingSun" placeholder="—"></td>
               </tr>
               <tr>
                 <td>Station Expansion</td>
                 <td><input type="number" min="0" max="10" v-model.number="criteria.stationExpansion.min"></td>
-                <td>
-                  <div class="max-cell">
-                    <input type="checkbox" v-model="maxEnabled.stationExpansion">
-                    <input type="number" min="0" max="10" v-model.number="criteria.stationExpansion.max" :disabled="!maxEnabled.stationExpansion">
-                  </div>
-                </td>
+                <td><input type="number" min="0" max="10" v-model.number="criteria.stationExpansion.max" placeholder="—"></td>
               </tr>
               <tr>
                 <td>VP</td>
                 <td><input type="number" min="0" max="10" v-model.number="criteria.vp.min"></td>
-                <td>
-                  <div class="max-cell">
-                    <input type="checkbox" v-model="maxEnabled.vp">
-                    <input type="number" min="0" max="10" v-model.number="criteria.vp.max" :disabled="!maxEnabled.vp">
-                  </div>
-                </td>
-              </tr>
-              <tr :class="{ disabled: !criteria.includeRisingSun }">
-                <td>Attack Actions</td>
-                <td><input type="number" min="0" max="10" v-model.number="criteria.attack.min" :disabled="!criteria.includeRisingSun"></td>
-                <td>
-                  <div class="max-cell">
-                    <input type="checkbox" v-model="maxEnabled.attack" :disabled="!criteria.includeRisingSun">
-                    <input type="number" min="0" max="10" v-model.number="criteria.attack.max" :disabled="!maxEnabled.attack || !criteria.includeRisingSun">
-                  </div>
-                </td>
+                <td><input type="number" min="0" max="10" v-model.number="criteria.vp.max" placeholder="—"></td>
               </tr>
               </tbody>
             </table>
@@ -91,7 +61,10 @@
         <label>RNG seed: <input type="number" v-model.number="criteria.seed"></label>
         <span class="seed-hint"> — use only if you know what you're doing</span>
       </div>
-      <button type="button" class="generate-btn" @click="submit">Generate</button>
+      <div class="generate-row">
+        <div v-if="tooManyMins" class="min-error">Total minimums ({{ totalMin }}) exceed 8</div>
+        <button type="submit" class="generate-btn" :disabled="tooManyMins">Generate</button>
+      </div>
     </form>
   </div>
 
@@ -108,7 +81,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted } from 'vue'
+import { defineComponent, ref, computed, onMounted } from 'vue'
 import { Card } from '../app/card'
 import { Criteria, TypeCriterion } from '../app/criteria'
 import { generate } from '../app/generator'
@@ -132,24 +105,8 @@ function defaultCriteria(): Criteria {
   }
 }
 
-type MaxEnabled = {
-  train: boolean
-  railLaying: boolean
-  action: boolean
-  stationExpansion: boolean
-  vp: boolean
-  attack: boolean
-}
-
-function maxEnabledFromCriteria(c: Criteria): MaxEnabled {
-  return {
-    train: c.train.max !== undefined,
-    railLaying: c.railLaying.max !== undefined,
-    action: c.action.max !== undefined,
-    stationExpansion: c.stationExpansion.max !== undefined,
-    vp: c.vp.max !== undefined,
-    attack: c.attack.max !== undefined,
-  }
+function maxOf(n: number | undefined): number | undefined {
+  return n === undefined || isNaN(n) ? undefined : n
 }
 
 export default defineComponent({
@@ -157,9 +114,15 @@ export default defineComponent({
 
   setup() {
     const criteria = ref<Criteria>(defaultCriteria())
-    const maxEnabled = reactive<MaxEnabled>(maxEnabledFromCriteria(criteria.value))
     const cards = ref<Card[] | undefined>(undefined)
     const repeatable_param = ref('')
+
+    const totalMin = computed(() => {
+      const c = criteria.value
+      return c.train.min + c.railLaying.min + c.action.min + c.stationExpansion.min + c.vp.min +
+        (c.includeRisingSun ? c.attack.min : 0)
+    })
+    const tooManyMins = computed(() => totalMin.value > 8)
 
     // https://boardgamegeek.com/thread/1373087/not-so-random-randomizer
     onMounted(() => {
@@ -169,7 +132,6 @@ export default defineComponent({
         const seedParam = params.get('seed')
         if (seedParam) c.seed = parseInt(seedParam)
         criteria.value = c
-        Object.assign(maxEnabled, maxEnabledFromCriteria(c))
       } else {
         const seedParam = params.get('seed')
         if (seedParam) criteria.value.seed = parseInt(seedParam)
@@ -181,22 +143,22 @@ export default defineComponent({
       const seed = c.seed ? c.seed : Math.round(Math.random() * 10000000)
       const rng = new SeededRandomNumberGenerator(seed)
 
-      // Build effective criteria — only pass max where enabled
+      // Treat blank max inputs (NaN) as no upper bound
       const effective: Criteria = {
         ...c,
-        train: new TypeCriterion(c.train.type, c.train.min, maxEnabled.train ? c.train.max : undefined),
-        railLaying: new TypeCriterion(c.railLaying.type, c.railLaying.min, maxEnabled.railLaying ? c.railLaying.max : undefined),
-        action: new TypeCriterion(c.action.type, c.action.min, maxEnabled.action ? c.action.max : undefined),
-        stationExpansion: new TypeCriterion(c.stationExpansion.type, c.stationExpansion.min, maxEnabled.stationExpansion ? c.stationExpansion.max : undefined),
-        vp: new TypeCriterion(c.vp.type, c.vp.min, maxEnabled.vp ? c.vp.max : undefined),
-        attack: new TypeCriterion(c.attack.type, c.attack.min, maxEnabled.attack ? c.attack.max : undefined),
+        train: new TypeCriterion(c.train.type, c.train.min, maxOf(c.train.max)),
+        railLaying: new TypeCriterion(c.railLaying.type, c.railLaying.min, maxOf(c.railLaying.max)),
+        action: new TypeCriterion(c.action.type, c.action.min, maxOf(c.action.max)),
+        stationExpansion: new TypeCriterion(c.stationExpansion.type, c.stationExpansion.min, maxOf(c.stationExpansion.max)),
+        vp: new TypeCriterion(c.vp.type, c.vp.min, maxOf(c.vp.max)),
+        attack: new TypeCriterion(c.attack.type, c.attack.min, maxOf(c.attack.max)),
       }
 
       cards.value = generate(effective, rng)
       repeatable_param.value = Parameters.fromCriteria(effective, seed).toString()
     }
 
-    return { criteria, maxEnabled, cards, repeatable_param, submit }
+    return { criteria, cards, repeatable_param, submit, totalMin, tooManyMins }
   },
 })
 </script>
@@ -306,25 +268,10 @@ tr.disabled td {
   color: #B8C8D8;
 }
 
-/* Stacked checkbox + number for max column */
-.max-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.max-cell input[type="checkbox"] {
-  accent-color: var(--shin-blue);
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-
 input[type="number"] {
   width: 62px;
   padding: 6px 8px;
-  border: 1px solid var(--border);
+  border: 2px solid #9AB0C8;
   border-radius: 3px;
   font-size: 1rem;
   font-family: inherit;
@@ -345,6 +292,24 @@ input[type="number"]:disabled {
   border-color: #E0E8F0;
 }
 
+.attack-indent {
+  padding-left: 24px !important;
+}
+
+.generate-row {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.min-error {
+  font-size: 0.9rem;
+  color: #C0392B;
+  font-weight: 500;
+}
+
 .seed-line {
   margin-top: 18px;
   font-size: 1rem;
@@ -362,6 +327,7 @@ input[type="number"]:disabled {
 button.generate-btn {
   display: inline-block;
   background: var(--shin-blue);
+  margin-top: 0;
   color: white;
   border: none;
   padding: 12px 40px;
@@ -372,8 +338,13 @@ button.generate-btn {
   cursor: pointer;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-top: 20px;
   transition: background 0.15s ease, transform 0.1s ease;
+}
+
+button.generate-btn:disabled {
+  background: #A0AABB;
+  cursor: not-allowed;
+  transform: none;
 }
 
 button.generate-btn:hover {
