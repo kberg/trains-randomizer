@@ -1,21 +1,21 @@
 import { Criteria, TypeCriterion } from "./criteria";
 import { CARDS, Set, Type, Card } from "./card";
-import { RNG, Random2 } from "./random";
+import { RandomNumberGenerator } from "./random";
 
 var ADDITIONAL_CARDS_SIZE = 8;
 
-export function generate(criteria: Criteria, rng: RNG) {
+export function generate(criteria: Criteria, rng: RandomNumberGenerator) {
   if (!(criteria.includeTrains || criteria.includeRisingSun)) {
     throw new Error("Criteria must include at least one set with base cards.");
   }
 
   var criteriaMap: Map<Type, TypeCriterion> = new Map();
-  criteriaMap.set(Type.Action, criteria.action);
-  criteriaMap.set(Type.Attack, criteria.attack);
-  criteriaMap.set(Type.RailLaying, criteria.railLaying);
-  criteriaMap.set(Type.StationExpansion, criteria.stationExpansion);
-  criteriaMap.set(Type.Train, criteria.train);
-  criteriaMap.set(Type.VictoryPoints, criteria.vp);
+  criteriaMap.set("Action", criteria.action);
+  criteriaMap.set("Attack", criteria.attack);
+  criteriaMap.set("Rail Laying", criteria.railLaying);
+  criteriaMap.set("Station Expansion", criteria.stationExpansion);
+  criteriaMap.set("Train", criteria.train);
+  criteriaMap.set("Victory Points", criteria.vp);
 
   let totalMinimums: number = 0;
   criteriaMap.forEach(v => totalMinimums += v.min);
@@ -25,11 +25,11 @@ export function generate(criteria: Criteria, rng: RNG) {
   }
 
   function setPredicate(set: Set) {
-    return function(c) { return c.sets.includes(set); }
+    return function(c: Card) { return c.sets.includes(set); }
   }
-  
-  var falsePredicate = function(c) { return false; };
-  
+
+  var falsePredicate = function(_c: Card) { return false; };
+
   var trainsPredicate = criteria.includeTrains ? setPredicate(Set.Trains) : falsePredicate;
   var risingSunPredicate = criteria.includeRisingSun ? setPredicate(Set.RisingSun) : falsePredicate;
   var coastalTidesPredicate = criteria.includeCoastalTides ? setPredicate(Set.CoastalTides) : falsePredicate;
@@ -73,20 +73,20 @@ export function generate(criteria: Criteria, rng: RNG) {
 
   // limitByType counts down to zero for each available type. Once a count is zero, no more are added.
   // So if maxEnabled is false, the max is 100, effectively infinity.
-  var limitByType: Map<Type, Number> = new Map();
-  criteriaMap.forEach((v, k) => limitByType.set(k, v.maxEnabled ? v.max - v.min : 100));
+  var limitByType: Map<Type, number> = new Map();
+  criteriaMap.forEach((v, k) => limitByType.set(k, v.max !== undefined ? v.max - v.min : 100));
 
   // Fill the rest of the deck with arbitrary cards, respecting maximums
   shuffled = shuffle(shuffled, rng);
-  
+
   var cardIdx = 0;
   while (randomCards.length < ADDITIONAL_CARDS_SIZE && cardIdx < shuffled.length) {
     var card = shuffled[cardIdx];
     var type = card.type;
-    if (limitByType[type] > 0) {
+    if ((limitByType.get(type) ?? 0) > 0) {
       randomCards.push(card);
       shuffled.splice(cardIdx, 1);
-      limitByType[type]--;
+      limitByType.set(type, (limitByType.get(type) ?? 0) - 1);
     } else {
       cardIdx++;
     }
@@ -101,7 +101,7 @@ export function generate(criteria: Criteria, rng: RNG) {
 }
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-function shuffle(array, rng: RNG) {
+function shuffle(array: Card[], rng: RandomNumberGenerator) {
   var currentIndex = array.length;
   var temporaryValue;
   var randomIndex;

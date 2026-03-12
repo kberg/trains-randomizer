@@ -2,19 +2,19 @@ import { Set, Type } from './card';
 
 // https://boardgamegeek.com/thread/1373087/not-so-random-randomizer
 
-export class Criteria {
-  set : Set;
+export type Criteria = {
+  set?: Set;
   includeTrains: boolean;
   includeRisingSun: boolean;
   includeCoastalTides: boolean;
   preset: string;
 
-  action : TypeCriterion;
-  attack : TypeCriterion;
-  railLaying : TypeCriterion;
+  action: TypeCriterion;
+  attack: TypeCriterion;
+  railLaying: TypeCriterion;
   stationExpansion: TypeCriterion;
-  train : TypeCriterion;
-  vp : TypeCriterion;
+  train: TypeCriterion;
+  vp: TypeCriterion;
 
   // random number generator seed.
   // undefined for standard RNG.
@@ -23,16 +23,12 @@ export class Criteria {
 
 export class TypeCriterion {
   min: number;
-  max: number;
-  maxEnabled: boolean;
+  max: number | undefined;
   type: Type;
 
-  constructor(type: Type, min: number, max ?: number) {
+  constructor(type: Type, min: number, max?: number | undefined) {
     this.type = type;
     this.min = min;
-    if (max) {
-      this.max = max;
-      this.maxEnabled = true;
-    }
+    this.max = max;
   }
 }
