@@ -95,12 +95,12 @@ function defaultCriteria(): Criteria {
     includeRisingSun: false,
     includeCoastalTides: false,
     preset: '',
-    action: new TypeCriterion("Action", 3, 4),
-    attack: new TypeCriterion("Attack", 0),
-    railLaying: new TypeCriterion("Rail Laying", 2, 3),
-    stationExpansion: new TypeCriterion("Station Expansion", 0, 1),
-    train: new TypeCriterion("Train", 2, 3),
-    vp: new TypeCriterion("Victory Points", 0),
+    action: {type: "Action", min: 3, max: 4},
+    attack: {type: "Attack", min: 0, max: undefined},
+    railLaying: {type: "Rail Laying", min: 2, max: 3},
+    stationExpansion: {type: "Station Expansion", min: 0, max: 1},
+    train: {type: "Train", min: 2, max: 3},
+    vp: {type: "Victory Points", min: 0, max: undefined},
     seed: NaN,
   }
 }
@@ -130,28 +130,32 @@ export default defineComponent({
       if (params.has('c')) {
         const c = Parameters.toCriteria(params)
         const seedParam = params.get('seed')
-        if (seedParam) c.seed = parseInt(seedParam)
+        if (seedParam) {
+          c.seed = parseInt(seedParam)
+        }
         criteria.value = c
       } else {
         const seedParam = params.get('seed')
-        if (seedParam) criteria.value.seed = parseInt(seedParam)
+        if (seedParam) {
+          criteria.value.seed = parseInt(seedParam)
+        }
       }
     })
 
     function submit() {
       const c = criteria.value
-      const seed = c.seed ? c.seed : Math.round(Math.random() * 10000000)
+      const seed = c.seed ?? Math.round(Math.random() * 10000000)
       const rng = new SeededRandomNumberGenerator(seed)
 
       // Treat blank max inputs (NaN) as no upper bound
       const effective: Criteria = {
         ...c,
-        train: new TypeCriterion(c.train.type, c.train.min, maxOf(c.train.max)),
-        railLaying: new TypeCriterion(c.railLaying.type, c.railLaying.min, maxOf(c.railLaying.max)),
-        action: new TypeCriterion(c.action.type, c.action.min, maxOf(c.action.max)),
-        stationExpansion: new TypeCriterion(c.stationExpansion.type, c.stationExpansion.min, maxOf(c.stationExpansion.max)),
-        vp: new TypeCriterion(c.vp.type, c.vp.min, maxOf(c.vp.max)),
-        attack: new TypeCriterion(c.attack.type, c.attack.min, maxOf(c.attack.max)),
+        train: {type: c.train.type, min: c.train.min, max: maxOf(c.train.max)},
+        railLaying: {type: c.railLaying.type, min: c.railLaying.min, max: maxOf(c.railLaying.max)},
+        action: {type: c.action.type, min: c.action.min, max: maxOf(c.action.max)},
+        stationExpansion: {type: c.stationExpansion.type, min: c.stationExpansion.min, max: maxOf(c.stationExpansion.max)},
+        vp: {type: c.vp.type, min: c.vp.min, max: maxOf(c.vp.max)},
+        attack: {type: c.attack.type, min: c.attack.min, max: maxOf(c.attack.max)},
       }
 
       cards.value = generate(effective, rng)
@@ -278,6 +282,7 @@ input[type="number"] {
   color: var(--text-dark);
   background: white;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 input[type="number"]:focus {

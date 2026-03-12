@@ -30,9 +30,9 @@ export function generate(criteria: Criteria, rng: RandomNumberGenerator) {
 
   var falsePredicate = function(_c: Card) { return false; };
 
-  var trainsPredicate = criteria.includeTrains ? setPredicate(Set.Trains) : falsePredicate;
-  var risingSunPredicate = criteria.includeRisingSun ? setPredicate(Set.RisingSun) : falsePredicate;
-  var coastalTidesPredicate = criteria.includeCoastalTides ? setPredicate(Set.CoastalTides) : falsePredicate;
+  var trainsPredicate = criteria.includeTrains ? setPredicate('tr') : falsePredicate;
+  var risingSunPredicate = criteria.includeRisingSun ? setPredicate('rs') : falsePredicate;
+  var coastalTidesPredicate = criteria.includeCoastalTides ? setPredicate('ct') : falsePredicate;
 
   // Start by collecting the base cards. At least one of trains and rising sun sets have to be
   // included. It only prefers the Rising Sun base cards when Trains is not a selected card set.

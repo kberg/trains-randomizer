@@ -21,14 +21,8 @@ export type Criteria = {
   seed: number;
 }
 
-export class TypeCriterion {
+export type TypeCriterion = {
+  type: Type;
   min: number;
   max: number | undefined;
-  type: Type;
-
-  constructor(type: Type, min: number, max?: number | undefined) {
-    this.type = type;
-    this.min = min;
-    this.max = max;
-  }
 }

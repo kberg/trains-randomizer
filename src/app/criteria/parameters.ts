@@ -1,23 +1,22 @@
 import { Criteria, TypeCriterion } from "../criteria";
 import type { Type } from "../card";
 
-export class Parameters {
-
-  static toTC(t: Type, input: string | null): TypeCriterion {
-    const s = input || "";
-    const parts = s.split(",");
-    const c = (str: string) => { const i = parseInt(str); return isNaN(i) ? undefined : i; };
-
-    if (parts.length > 1) {
-      return new TypeCriterion(t, c(parts[0]) ?? 0, c(parts[1]));
-    } else if (parts.length == 1) {
-      return new TypeCriterion(t, c(parts[0]) ?? 0);
-    } else {
-      return new TypeCriterion(t, 0);
-    }
+function parse(str: string) {
+    const i = parseInt(str);
+    return isNaN(i) ? undefined : i;
   };
 
-  static toCriteria(params: URLSearchParams): Criteria {
+export namespace Parameters {
+  export function toTC(t: Type, input: string | null): TypeCriterion {
+    const s = input || "";
+    const parts = s.split(",");
+
+    const min = parts.length > 0 ? (parse(parts[0]) ?? 0) : 0;
+    const max = parts.length > 1 ? parse(parts[1]) : undefined;
+    return {type: t, min: min, max: max};
+  };
+
+  export function toCriteria(params: URLSearchParams): Criteria {
     const decks = params.get("decks") ?? "";
     return {
       includeTrains: decks.indexOf("tr") >= 0,
@@ -34,7 +33,7 @@ export class Parameters {
     };
   }
 
-  static fromTc(t: TypeCriterion, key: string, params: URLSearchParams) : void {
+  export function fromTc(t: TypeCriterion, key: string, params: URLSearchParams) : void {
     var s = "";
     if (t.min) {
       s = s + t.min;
@@ -47,7 +46,7 @@ export class Parameters {
     }
   }
 
-  static fromCriteria(c: Criteria, seed: number): URLSearchParams {
+  export function fromCriteria(c: Criteria, seed: number): URLSearchParams {
     var p = new URLSearchParams();
     p.append("c", "");
 
