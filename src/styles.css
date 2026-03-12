@@ -1,1 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
+/* Shinkansen — bullet train across the countryside */
+
+:root {
+  --shin-blue:     #003087;
+  --shin-blue-mid: #0055A5;
+  --shin-blue-lt:  #E8F0FC;
+  --text-dark:     #1A1A2E;
+  --text-muted:    #6B7A8D;
+  --border:        #C8D8E8;
+  --bg-green:      #EEF2EB;
+  --bg-panel:      #FFFFFF;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 32px 0 80px;
+  min-height: 100vh;
+  /* Countryside: soft green with horizontal speed-streak bands rushing past */
+  background-color: var(--bg-green);
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 22px,
+    rgba(255, 255, 255, 0.45) 22px,
+    rgba(255, 255, 255, 0.45) 24px
+  );
+  font-family: 'Inter', 'Trebuchet MS', system-ui, sans-serif;
+  color: var(--text-dark);
+}
+
+#app {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+}

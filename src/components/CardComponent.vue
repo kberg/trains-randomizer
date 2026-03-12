@@ -34,60 +34,83 @@ export default defineComponent({
 
 <style>
 .base {
-  font-family: sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   text-align: center;
-  width: 200px;
-  height: 120px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+}
+
+.base:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+}
+
+.base > div {
+  min-height: 120px;
+  padding-bottom: 10px;
 }
 
 .buffer {
-  height: 8px;
+  height: 10px;
 }
 
 .name {
-  margin: 8px;
-  background: black;
+  margin: 0 10px 8px;
+  background: rgba(0, 0, 0, 0.72);
   color: white;
-  font-size: 24px;
+  font-size: 1rem;
+  font-weight: 600;
   border-radius: 4px;
-  padding: 4px;
+  padding: 6px 8px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .type {
-  font-size: 12px;
-  vertical-align: text-bottom;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  display: block;
+  padding: 0 8px;
 }
 
 .attack-note {
-  font-size: 10px;
+  font-size: 0.65rem;
   font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 3px;
 }
 
 .action {
-  background-color: rgb(207, 83, 83);
+  background: linear-gradient(145deg, rgb(207, 83, 83) 0%, rgb(175, 55, 55) 100%);
 }
 
 .attack {
-  background-color: rgb(226, 50, 50);
+  background: linear-gradient(145deg, rgb(226, 50, 50) 0%, rgb(190, 28, 28) 100%);
 }
 
 .raillaying {
-  background-color: rgb(105, 168, 108);
+  background: linear-gradient(145deg, rgb(105, 168, 108) 0%, rgb(76, 138, 79) 100%);
 }
 
 .stationexpansion {
-  background-color: rgb(117, 109, 162);
+  background: linear-gradient(145deg, rgb(117, 109, 162) 0%, rgb(88, 80, 133) 100%);
 }
 
 .train {
-  background-color: rgb(113, 152, 202);
+  background: linear-gradient(145deg, rgb(113, 152, 202) 0%, rgb(78, 118, 172) 100%);
 }
 
 .victorypoints {
-  background-color: rgb(190, 163, 61);
+  background: linear-gradient(145deg, rgb(190, 163, 61) 0%, rgb(158, 132, 38) 100%);
 }
 
 .waste {
-  background-color: rgb(101, 100, 107);
+  background: linear-gradient(145deg, rgb(101, 100, 107) 0%, rgb(72, 71, 78) 100%);
 }
 </style>
