@@ -59,6 +59,34 @@
         </tr>
         </tbody>
       </table>
+      <div class="ban-section">
+        <button type="button" class="ban-toggle" @click="banExpanded = !banExpanded">
+          <span class="ban-toggle-chev">{{ banExpanded ? '▾' : '▸' }}</span>
+          <span class="heading ban-toggle-label">Ban list</span>
+          <span class="ban-count" v-if="bannedCount > 0">({{ bannedCount }} banned)</span>
+        </button>
+        <div v-if="banExpanded" class="ban-groups">
+          <div v-if="banGroups.length === 0" class="ban-empty">
+            Select an expansion to see bannable cards.
+          </div>
+          <div class="ban-group" v-for="group in banGroups" :key="group.type">
+            <div class="ban-group-heading">{{ group.type }}</div>
+            <div class="ban-items">
+              <label v-for="card in group.cards" :key="card.id"
+                     class="ban-item"
+                     :class="{ 'ban-item-disabled': banDisabled(card) }"
+                     :title="banDisabledReason(card)">
+                <input type="checkbox"
+                       :checked="criteria.bannedCards.includes(card.id)"
+                       :disabled="banDisabled(card)"
+                       @change="toggleBan(card)">
+                <span class="ban-item-name">{{ card.name }}</span>
+                <span v-if="card.base" class="required-pill">required</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="seed-line">
         <label>RNG seed: <input type="number" v-model.number="criteria.seed"></label>
         <span class="seed-hint"> — use only if you know what you're doing</span>
@@ -99,8 +127,13 @@
       </div>
       <p></p>
       <div class="params-line">
-        If you get surprising results and want support, send the contents of this field:
-        <input type="text" disabled :value="repeatable_param">
+        <div>If you get surprising results and want support, send the contents of this field:</div>
+        <div class="params-row">
+          <input type="text" disabled :value="repeatable_param">
+          <button type="button" class="copy-btn" @click="copyParam" :disabled="!repeatable_param">
+            {{ copyLabel }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -112,7 +145,7 @@ import { Card } from '../app/card'
 import { Criteria, TypeCriterion } from '../app/criteria'
 import { generate } from '../app/generator'
 import { PRESETS } from '../app/presets'
-import { CARDS, type Set } from '../app/card'
+import { CARDS, TYPES, type Set, type Type } from '../app/card'
 import { SeededRandomNumberGenerator } from '../app/random'
 import { Parameters } from '../app/criteria/parameters'
 import CardComponent from './CardComponent.vue'
@@ -129,6 +162,7 @@ function defaultCriteria(): Criteria {
     stationExpansion: {type: "Station Expansion", min: 0, max: 1},
     train: {type: "Train", min: 2, max: 3},
     vp: {type: "Victory Points", min: 0, max: undefined},
+    bannedCards: [],
     seed: NaN,
   }
 }
@@ -178,6 +212,80 @@ export default defineComponent({
     })
     const tooManyMins = computed(() => totalMin.value > 8)
 
+    const banExpanded = ref(false)
+
+    const selectedExpansionCount = computed(() =>
+      (criteria.value.includeTrains ? 1 : 0) +
+      (criteria.value.includeRisingSun ? 1 : 0) +
+      (criteria.value.includeCoastalTides ? 1 : 0))
+
+    function cardInSelectedDecks(c: Card): boolean {
+      return (criteria.value.includeTrains && c.sets.includes('tr')) ||
+        (criteria.value.includeRisingSun && c.sets.includes('rs')) ||
+        (criteria.value.includeCoastalTides && c.sets.includes('ct'))
+    }
+
+    const banGroups = computed(() => {
+      const visible = CARDS.filter(cardInSelectedDecks)
+      return TYPES.map(t => ({
+        type: t,
+        cards: visible.filter(c => c.type === t),
+      })).filter(g => g.cards.length > 0)
+    })
+
+    function banDisabled(c: Card): boolean {
+      if (c.base) {
+        return true
+      }
+      if (c.type === 'Victory Points' && selectedExpansionCount.value <= 1) {
+        return true
+      }
+      return false
+    }
+
+    function banDisabledReason(c: Card): string {
+      if (c.base) {
+        return 'Required card — cannot be banned.'
+      }
+      if (c.type === 'Victory Points' && selectedExpansionCount.value <= 1) {
+        return 'Cannot ban Victory Points cards when only one expansion is selected.'
+      }
+      return ''
+    }
+
+    function toggleBan(c: Card) {
+      if (banDisabled(c)) {
+        return
+      }
+      const list = criteria.value.bannedCards
+      const idx = list.indexOf(c.id)
+      if (idx >= 0) {
+        list.splice(idx, 1)
+      } else {
+        list.push(c.id)
+      }
+    }
+
+    const bannedCount = computed(() => criteria.value.bannedCards.length)
+
+    const copyLabel = ref('Copy')
+    let copyResetTimer: ReturnType<typeof setTimeout> | undefined
+    async function copyParam() {
+      if (!repeatable_param.value) {
+        return
+      }
+      try {
+        await navigator.clipboard.writeText(repeatable_param.value)
+        copyLabel.value = 'Copied'
+      } catch {
+        copyLabel.value = 'Copy failed'
+      }
+      if (copyResetTimer) {
+        clearTimeout(copyResetTimer)
+      }
+      copyResetTimer = setTimeout(() => { copyLabel.value = 'Copy' }, 1500)
+    }
+
     // https://boardgamegeek.com/thread/1373087/not-so-random-randomizer
     onMounted(() => {
       const params = new URLSearchParams(window.location.search)
@@ -221,6 +329,8 @@ export default defineComponent({
       criteria, cards, repeatable_param, submit, totalMin, tooManyMins,
       presets: PRESETS, selectedPresetIdx, loadPreset, setLabel,
       requiredCards, optionalCards, wasteCard,
+      banExpanded, banGroups, banDisabled, banDisabledReason, toggleBan, bannedCount,
+      copyParam, copyLabel,
     }
   },
 })
@@ -494,6 +604,13 @@ button.generate-btn:active {
   color: var(--text-muted);
 }
 
+.params-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  width: 100%;
+}
+
 .params-line input[type="text"] {
   font-family: 'Courier New', monospace;
   font-size: 0.8rem;
@@ -502,7 +619,128 @@ button.generate-btn:active {
   border-radius: 3px;
   background: #F5F8FA;
   color: var(--text-dark);
-  width: 300px;
-  margin-left: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+button.copy-btn {
+  flex: 0 0 auto;
+  background: var(--shin-blue);
+  color: white;
+  border: none;
+  padding: 5px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.15s ease;
+}
+
+button.copy-btn:hover {
+  background: var(--shin-blue-mid);
+}
+
+button.copy-btn:disabled {
+  background: #A0AABB;
+  cursor: not-allowed;
+}
+
+.ban-section {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+button.ban-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ban-toggle-chev {
+  color: var(--shin-blue);
+  font-size: 0.9rem;
+  width: 12px;
+  text-align: center;
+}
+
+.ban-toggle-label {
+  margin-bottom: 0;
+}
+
+.ban-count {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.ban-groups {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ban-group-heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--shin-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.ban-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 4px 12px;
+}
+
+.ban-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.ban-item input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.ban-item-disabled {
+  color: #98A4B6;
+  cursor: not-allowed;
+}
+
+.ban-item-disabled input[type="checkbox"] {
+  cursor: not-allowed;
+}
+
+.required-pill {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: #E8EEF6;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.ban-empty {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-muted);
 }
 </style>

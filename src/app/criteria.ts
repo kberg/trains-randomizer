@@ -16,6 +16,11 @@ export type Criteria = {
   train: TypeCriterion;
   vp: TypeCriterion;
 
+  // Card IDs (e.g. "TR05", "RS12") to exclude from random draws.
+  // The UI enforces that base cards never appear here, and that VP
+  // cards never appear here when only one expansion is selected.
+  bannedCards: string[];
+
   // random number generator seed.
   // undefined for standard RNG.
   seed: number;

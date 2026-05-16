@@ -1,5 +1,5 @@
 import { Criteria, TypeCriterion } from "../criteria";
-import type { Type } from "../card";
+import { lookupCardById, type Type } from "../card";
 
 function parse(str: string) {
     const i = parseInt(str);
@@ -18,6 +18,11 @@ export namespace Parameters {
 
   export function toCriteria(params: URLSearchParams): Criteria {
     const decks = params.get("decks") ?? "";
+    const bannedRaw = params.get("banned") ?? "";
+    const bannedCards = bannedRaw
+      .split(",")
+      .map(s => s.trim())
+      .filter(s => s.length > 0 && lookupCardById(s) !== undefined);
     return {
       includeTrains: decks.indexOf("tr") >= 0,
       includeRisingSun: decks.indexOf("rs") >= 0,
@@ -28,6 +33,7 @@ export namespace Parameters {
       stationExpansion: Parameters.toTC("Station Expansion", params.get("s")),
       train: Parameters.toTC("Train", params.get("t")),
       vp: Parameters.toTC("Victory Points", params.get("v")),
+      bannedCards: bannedCards,
       preset: "",
       seed: NaN,
     };
@@ -62,6 +68,10 @@ export namespace Parameters {
     Parameters.fromTc(c.stationExpansion, "s", p);
     Parameters.fromTc(c.train, "t", p);
     Parameters.fromTc(c.vp, "v", p);
+
+    if (c.bannedCards.length > 0) {
+      p.append("banned", c.bannedCards.join(","));
+    }
 
     p.append("seed", seed.toString());
     return p;

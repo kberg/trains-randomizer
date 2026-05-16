@@ -45,6 +45,7 @@ export function generate(criteria: Criteria, rng: RandomNumberGenerator) {
       CARDS
         .filter(c => !c.base)
         .filter(c => (trainsPredicate(c) || risingSunPredicate(c) || coastalTidesPredicate(c)))
+        .filter(c => !criteria.bannedCards.includes(c.id))
 
   // Finding cards works like this: for each minimum, deal from the top, and deal out
   // that many cards.
