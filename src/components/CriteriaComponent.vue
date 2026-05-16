@@ -65,6 +65,16 @@
         <div v-if="tooManyMins" class="min-error">Total minimums ({{ totalMin }}) exceed 8</div>
         <button type="submit" class="generate-btn" :disabled="tooManyMins">Generate</button>
       </div>
+      <div class="preset-line">
+        <label>Or load a preset:
+          <select v-model.number="selectedPresetIdx" @change="loadPreset">
+            <option :value="-1">— none —</option>
+            <option v-for="(p, idx) in presets" :key="idx" :value="idx">
+              {{ setLabel(p.set) }}: {{ p.name }}
+            </option>
+          </select>
+        </label>
+      </div>
     </form>
   </div>
 
@@ -95,6 +105,8 @@ import { defineComponent, ref, computed, onMounted } from 'vue'
 import { Card } from '../app/card'
 import { Criteria, TypeCriterion } from '../app/criteria'
 import { generate } from '../app/generator'
+import { PRESETS } from '../app/presets'
+import { CARDS, type Set } from '../app/card'
 import { SeededRandomNumberGenerator } from '../app/random'
 import { Parameters } from '../app/criteria/parameters'
 import CardComponent from './CardComponent.vue'
@@ -126,13 +138,32 @@ export default defineComponent({
     const criteria = ref<Criteria>(defaultCriteria())
     const cards = ref<Card[] | undefined>(undefined)
     const repeatable_param = ref('')
+    const selectedPresetIdx = ref<number>(-1)
 
-    const requiredCards = computed(() =>
-      (cards.value ?? []).filter(c => c.base && c.type !== 'Waste'))
-    const optionalCards = computed(() =>
-      (cards.value ?? []).filter(c => !c.base))
-    const wasteCard = computed(() =>
-      (cards.value ?? []).find(c => c.type === 'Waste'))
+    const setLabels: Record<Set, string> = {
+      tr: 'Trains',
+      rs: 'Rising Sun',
+      ct: 'Coastal Tides',
+    }
+    function setLabel(s: Set): string {
+      return setLabels[s]
+    }
+
+    function loadPreset() {
+      if (selectedPresetIdx.value < 0) {
+        return
+      }
+      const preset = PRESETS[selectedPresetIdx.value]
+      const baseCards = CARDS.filter(c => c.base && c.sets.includes(preset.set))
+      const baseSet = new Set(baseCards)
+      const extras = preset.cards.filter(c => !baseSet.has(c))
+      cards.value = baseCards.concat(extras)
+      repeatable_param.value = ''
+    }
+
+    const requiredCards = computed(() => (cards.value ?? []).filter(c => c.base && c.type !== 'Waste'))
+    const optionalCards = computed(() => (cards.value ?? []).filter(c => !c.base))
+    const wasteCard = computed(() => (cards.value ?? []).find(c => c.type === 'Waste'))
 
     const totalMin = computed(() => {
       const c = criteria.value
@@ -160,6 +191,7 @@ export default defineComponent({
     })
 
     function submit() {
+      selectedPresetIdx.value = -1
       const c = criteria.value
       const seed = Number.isFinite(c.seed) ? c.seed : Math.round(Math.random() * 10000000)
       const rng = new SeededRandomNumberGenerator(seed)
@@ -181,6 +213,7 @@ export default defineComponent({
 
     return {
       criteria, cards, repeatable_param, submit, totalMin, tooManyMins,
+      presets: PRESETS, selectedPresetIdx, loadPreset, setLabel,
       requiredCards, optionalCards, wasteCard,
     }
   },
@@ -333,6 +366,32 @@ input[type="number"]:disabled {
   font-size: 0.9rem;
   color: #C0392B;
   font-weight: 500;
+}
+
+.preset-line {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+  font-size: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.preset-line select {
+  margin-left: 6px;
+  padding: 6px 8px;
+  border: 2px solid #9AB0C8;
+  border-radius: 3px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text-dark);
+  background: white;
+}
+
+.preset-line select:focus {
+  outline: none;
+  border-color: var(--shin-blue-mid);
+  box-shadow: 0 0 0 2px rgba(0, 85, 165, 0.15);
 }
 
 .seed-line {
