@@ -37,3 +37,9 @@ body {
   margin: 0 auto;
   padding: 0 20px;
 }
+
+@media (min-width: 1200px) {
+  #app {
+    max-width: 1440px;
+  }
+}

@@ -1,7 +1,9 @@
 <template>
-  <h2>Criteria:</h2>
-  <div>
-    <form novalidate @submit.prevent="submit">
+  <div class="layout">
+    <div class="layout-form">
+      <h2>Criteria:</h2>
+      <div>
+        <form novalidate @submit.prevent="submit">
       <table>
         <tbody>
         <tr>
@@ -75,28 +77,32 @@
           </select>
         </label>
       </div>
-    </form>
-  </div>
+        </form>
+      </div>
+    </div>
 
-  <div class="grid-container">
-    <div class="grid-item" v-for="(card, index) in requiredCards" :key="'r' + index">
-      <CardComponent :card="card" />
+    <div class="layout-results">
+      <div class="grid-container">
+        <div class="grid-item" v-for="(card, index) in requiredCards" :key="'r' + index">
+          <CardComponent :card="card" />
+        </div>
+      </div>
+      <div class="grid-container section-gap" v-if="optionalCards.length">
+        <div class="grid-item" v-for="(card, index) in optionalCards" :key="'o' + index">
+          <CardComponent :card="card" />
+        </div>
+      </div>
+      <div class="grid-container section-gap" v-if="wasteCard">
+        <div class="grid-item">
+          <CardComponent :card="wasteCard" />
+        </div>
+      </div>
+      <p></p>
+      <div class="params-line">
+        If you get surprising results and want support, send the contents of this field:
+        <input type="text" disabled :value="repeatable_param">
+      </div>
     </div>
-  </div>
-  <div class="grid-container section-gap" v-if="optionalCards.length">
-    <div class="grid-item" v-for="(card, index) in optionalCards" :key="'o' + index">
-      <CardComponent :card="card" />
-    </div>
-  </div>
-  <div class="grid-container section-gap" v-if="wasteCard">
-    <div class="grid-item">
-      <CardComponent :card="wasteCard" />
-    </div>
-  </div>
-  <p></p>
-  <div class="params-line">
-    If you get surprising results and want support, send the contents of this field:
-    <input type="text" disabled :value="repeatable_param">
   </div>
 </template>
 
@@ -221,6 +227,33 @@ export default defineComponent({
 </script>
 
 <style>
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@media (min-width: 1200px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 48px;
+  }
+
+  .layout-form {
+    flex: 0 0 auto;
+  }
+
+  .layout-results {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .layout-results .grid-container:first-of-type {
+    margin-top: 0;
+  }
+}
+
 h2 {
   font-size: 0.9rem;
   font-weight: 700;
