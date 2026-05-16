@@ -12,15 +12,15 @@ function toCards(...names: Array<string>): Array<Card> {
   return names.map(lookupCardOrThrow);
 }
 
-export const PRESETS = [
+export const PRESETS: Preset[] = [
   {
     set: 'tr',
     name: "Beginner / Tokyo",
     cards: toCards(
       "Landfill",
-      "Conductor's Station",
+      "Conductor’s Station",
       "Holiday Timetable",
-      "Passing station",
+      "Passing Station",
       "Amusement Park",
       "Steel Bridge",
       "Dump Site",
@@ -36,7 +36,7 @@ export const PRESETS = [
       "Garage",
       "Tourist Train",
       "Ironworks",
-      "Stationmaster's Office",
+      "Stationmaster Office",
       "Tunnel",
       "Temporary Timetable"
     )
@@ -50,7 +50,7 @@ export const PRESETS = [
       "Information Central",
       "Freight Train",
       "Wagon Factory",
-      "Early train",
+      "Early Train",
       "Signaling Area",
       "Subway Excavation"
     )
@@ -63,7 +63,7 @@ export const PRESETS = [
       "Station Crew",
       "Holiday Timetable",
       "Tourist Train",
-      "Mail train",
+      "Mail Train",
       "Viaduct",
       "Maintenance Factory",
       "Control Room"
@@ -78,7 +78,7 @@ export const PRESETS = [
       "Station Crew",
       "Holiday Timetable",
       "Tourist Train",
-      "Mail train",
+      "Mail Train",
       "Viaduct",
       "Maintenance Factory",
       "Control Room"
@@ -88,11 +88,11 @@ export const PRESETS = [
     set: 'rs',
     name: "Beginner",
     cards: toCards(
-      "Biofuel Train",
+      "BioFuel Train",
       "Outdated Train",
       "Distant Partners",
       "Engineer",
-      "Junk Yard",
+      "Junkyard",
       "Limited Partnership",
       "Strategy Meeting",
       "Upgrade"
