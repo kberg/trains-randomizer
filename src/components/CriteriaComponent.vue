@@ -144,7 +144,7 @@ export default defineComponent({
 
     function submit() {
       const c = criteria.value
-      const seed = c.seed ?? Math.round(Math.random() * 10000000)
+      const seed = Number.isFinite(c.seed) ? c.seed : Math.round(Math.random() * 10000000)
       const rng = new SeededRandomNumberGenerator(seed)
 
       // Treat blank max inputs (NaN) as no upper bound
