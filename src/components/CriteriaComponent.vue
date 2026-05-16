@@ -69,8 +69,18 @@
   </div>
 
   <div class="grid-container">
-    <div class="grid-item" v-for="(card, index) in cards" :key="index">
+    <div class="grid-item" v-for="(card, index) in requiredCards" :key="'r' + index">
       <CardComponent :card="card" />
+    </div>
+  </div>
+  <div class="grid-container section-gap" v-if="optionalCards.length">
+    <div class="grid-item" v-for="(card, index) in optionalCards" :key="'o' + index">
+      <CardComponent :card="card" />
+    </div>
+  </div>
+  <div class="grid-container section-gap" v-if="wasteCard">
+    <div class="grid-item">
+      <CardComponent :card="wasteCard" />
     </div>
   </div>
   <p></p>
@@ -117,6 +127,13 @@ export default defineComponent({
     const cards = ref<Card[] | undefined>(undefined)
     const repeatable_param = ref('')
 
+    const requiredCards = computed(() =>
+      (cards.value ?? []).filter(c => c.base && c.type !== 'Waste'))
+    const optionalCards = computed(() =>
+      (cards.value ?? []).filter(c => !c.base))
+    const wasteCard = computed(() =>
+      (cards.value ?? []).find(c => c.type === 'Waste'))
+
     const totalMin = computed(() => {
       const c = criteria.value
       return c.train.min + c.railLaying.min + c.action.min + c.stationExpansion.min + c.vp.min +
@@ -162,7 +179,10 @@ export default defineComponent({
       repeatable_param.value = Parameters.fromCriteria(effective, seed).toString()
     }
 
-    return { criteria, cards, repeatable_param, submit, totalMin, tooManyMins }
+    return {
+      criteria, cards, repeatable_param, submit, totalMin, tooManyMins,
+      requiredCards, optionalCards, wasteCard,
+    }
   },
 })
 </script>
@@ -366,6 +386,10 @@ button.generate-btn:active {
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
   margin-top: 28px;
+}
+
+.grid-container.section-gap {
+  margin-top: 40px;
 }
 
 .grid-item {
